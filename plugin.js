@@ -4,10 +4,10 @@
 // proveedor de sincronizacion); aqui el almacen es Apps Script + Drive en vez de server.mjs.
 //
 // Kino cifra la copia y le entrega a este plugin solo un blob opaco (base64). El plugin lo guarda
-// en el Web App con POST {action:"push"} y lo trae de vuelta con GET ?action=pull. La version que
-// devuelve el Web App hace condicional cada escritura: "expected" lleva la version que Kino leyo
-// por ultima vez, y una respuesta "conflict" significa que otro aparato escribio primero -> Kino
-// trae, combina y vuelve a enviar.
+// en el Web App con POST {token, action:"push", blob, expected} y lo trae de vuelta con
+// GET ?action=pull. La version que devuelve el Web App hace condicional cada escritura: "expected"
+// lleva la version que Kino leyo por ultima vez, y una respuesta "conflict" significa que otro
+// aparato escribio primero -> Kino trae, combina y vuelve a enviar.
 //
 // La llave de cifrado la deriva Kino del ajuste "token" (sync.keySecret del manifiesto), asi que
 // este plugin y el dueno del Web App PUEDEN leer los datos sincronizados: por eso la pantalla de
@@ -34,14 +34,14 @@ function settings() {
   return { base: url, token };
 }
 
-/** Una peticion al Web App; la respuesta es JSON: {ok:true,...} o {ok:false,error:"token"}. */
+/** Una peticion al Web App; la respuesta es JSON: {ok:true,...} o {ok:false,error:"..."}. */
 async function api(action, body) {
   const s = settings();
   let r;
   try {
     r = await kino.fetch(s.base + (s.base.indexOf("?") >= 0 ? "&" : "?") + "action=" + action + "&token=" + encodeURIComponent(s.token), {
       method: body ? "POST" : "GET",
-      ...(body ? { headers: { "Content-Type": "application/json" }, body: { json: Object.assign({ token: s.token }, body) } } : {}),
+      ...(body ? { headers: { "Content-Type": "application/json" }, body: { json: Object.assign({ token: s.token, action: action }, body) } } : {}),
       redirect: "follow",
       cookies: false,
       timeoutMs: 30000,
