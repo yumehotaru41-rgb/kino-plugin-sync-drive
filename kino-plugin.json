@@ -1,7 +1,7 @@
 {
   "id": "sync-drive",
   "name": "Sync Drive",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "apiVersion": 12,
   "entry": "plugin.js",
   "icon": "icon.png",
@@ -42,10 +42,7 @@
       "labelEn": "Your server",
       "type": "section",
       "hint": "La URL /exec del Web App y el token que imprimió setup() en Apps Script.",
-      "hintEn": "The Web App's /exec URL and the token setup() printed in Apps Script.",
-      "devices": [
-        "phone"
-      ]
+      "hintEn": "The Web App's /exec URL and the token setup() printed in Apps Script."
     },
     {
       "key": "serverUrl",
@@ -53,10 +50,7 @@
       "labelEn": "Web App address",
       "type": "text",
       "hint": "https://script.google.com/macros/s/…/exec",
-      "hintEn": "https://script.google.com/macros/s/…/exec",
-      "devices": [
-        "phone"
-      ]
+      "hintEn": "https://script.google.com/macros/s/…/exec"
     },
     {
       "key": "token",
@@ -64,10 +58,7 @@
       "labelEn": "Token",
       "type": "password",
       "hint": "El que mostró setup() en Apps Script",
-      "hintEn": "The one setup() printed in Apps Script",
-      "devices": [
-        "phone"
-      ]
+      "hintEn": "The one setup() printed in Apps Script"
     },
     {
       "key": "status",
