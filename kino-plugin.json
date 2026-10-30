@@ -1,7 +1,7 @@
 {
   "id": "sync-drive",
   "name": "Sync Drive",
-  "version": "1.1.3",
+  "version": "1.2.0",
   "apiVersion": 12,
   "entry": "plugin.js",
   "icon": "icon.png",
@@ -75,8 +75,8 @@
   ],
   "sync": {
     "mode": "poll",
-    "pullEveryMs": 300000,
-    "pushDebounceMs": 60000,
+    "pullEveryMs": 120000,
+    "pushDebounceMs": 15000,
     "maxBlobBytes": 4194304,
     "keySecret": "token",
     "provision": [
