@@ -41,7 +41,7 @@ async function api(action, body) {
   try {
     r = await kino.fetch(s.base + (s.base.indexOf("?") >= 0 ? "&" : "?") + "action=" + action + "&token=" + encodeURIComponent(s.token), {
       method: body ? "POST" : "GET",
-      ...(body ? { headers: { "Content-Type": "application/json" }, body: { json: body } } : {}),
+      ...(body ? { headers: { "Content-Type": "application/json" }, body: { json: Object.assign({ token: s.token }, body) } } : {}),
       redirect: "follow",
       cookies: false,
       timeoutMs: 30000,

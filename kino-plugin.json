@@ -1,87 +1,14 @@
-{
-  "id": "sync-drive",
-  "name": "Sync Drive",
-  "version": "1.1.0",
-  "apiVersion": 12,
-  "entry": "plugin.js",
-  "icon": "icon.png",
-  "description": "Sincroniza tus aparatos de Kino a traves de un Web App de Google Apps Script tuyo, que guarda la copia cifrada en tu Google Drive. Monta Code.gs (ver README) y escribe su URL /exec y su token.",
-  "author": "yumehotaru41-rgb",
-  "hosts": [
-    "script.google.com"
-  ],
-  "fetchHosts": "any",
-  "capabilities": [
-    "syncProvider"
-  ],
-  "settings": [
-    {
-      "key": "needs",
-      "type": "help",
-      "title": "Qué necesitas",
-      "titleEn": "What you need",
-      "body": "Dos datos de tu Web App de Google Apps Script:\n- la direccion https del Web App (la URL que termina en /exec)\n- el token que muestra setup() en Apps Script\n\nPara montarlo, sigue el README de este repositorio.",
-      "bodyEn": "Two things from your Google Apps Script Web App:\n- its https address (the URL ending in /exec)\n- the token setup() prints in Apps Script\n\nTo set it up, follow this repository's README.",
-      "devices": [
-        "phone"
-      ]
-    },
-    {
-      "key": "guide",
-      "type": "link",
-      "label": "Ver la guía",
-      "labelEn": "Open the guide",
-      "url": "https://github.com/yumehotaru41-rgb/kino-plugin-sync-drive",
-      "devices": [
-        "phone"
-      ]
-    },
-    {
-      "key": "server",
-      "label": "Tu servidor",
-      "labelEn": "Your server",
-      "type": "section",
-      "hint": "La URL /exec del Web App y el token que imprimió setup() en Apps Script.",
-      "hintEn": "The Web App's /exec URL and the token setup() printed in Apps Script."
-    },
-    {
-      "key": "serverUrl",
-      "label": "Dirección del Web App",
-      "labelEn": "Web App address",
-      "type": "text",
-      "hint": "https://script.google.com/macros/s/…/exec",
-      "hintEn": "https://script.google.com/macros/s/…/exec"
-    },
-    {
-      "key": "token",
-      "label": "Token",
-      "labelEn": "Token",
-      "type": "password",
-      "hint": "El que mostró setup() en Apps Script",
-      "hintEn": "The one setup() printed in Apps Script"
-    },
-    {
-      "key": "status",
-      "label": "Estado",
-      "labelEn": "Status",
-      "type": "status"
-    },
-    {
-      "key": "check",
-      "label": "Probar conexión",
-      "labelEn": "Test the connection",
-      "type": "action"
+[
+  {
+    "type": "text",
+    "text": "successfully downloaded text file (SHA: e36ca319a9c72377032ddd160570bf98d3beda33)"
+  },
+  {
+    "type": "resource",
+    "resource": {
+      "uri": "repo://yumehotaru41-rgb/kino-plugin-sync-drive/sha/824eea207e7d2578264d3bc8be96bc68c71280ad/contents/kino-plugin.json",
+      "mimeType": "text/plain; charset=utf-8",
+      "text": "{\n  \"id\": \"sync-drive\",\n  \"name\": \"Sync Drive\",\n  \"version\": \"1.1.0\",\n  \"apiVersion\": 12,\n  \"entry\": \"plugin.js\",\n  \"icon\": \"icon.png\",\n  \"description\": \"Sincroniza tus aparatos de Kino a traves de un Web App de Google Apps Script tuyo, que guarda la copia cifrada en tu Google Drive. Monta Code.gs (ver README) y escribe su URL /exec y su token.\",\n  \"author\": \"yumehotaru41-rgb\",\n  \"hosts\": [\n    \"script.google.com\"\n  ],\n  \"fetchHosts\": \"any\",\n  \"capabilities\": [\n    \"syncProvider\"\n  ],\n  \"settings\": [\n    {\n      \"key\": \"needs\",\n      \"type\": \"help\",\n      \"title\": \"Qué necesitas\",\n      \"titleEn\": \"What you need\",\n      \"body\": \"Dos datos de tu Web App de Google Apps Script:\\n- la direccion https del Web App (la URL que termina en /exec)\\n- el token que muestra setup() en Apps Script\\n\\nPara montarlo, sigue el README de este repositorio.\",\n      \"bodyEn\": \"Two things from your Google Apps Script Web App:\\n- its https address (the URL ending in /exec)\\n- the token setup() prints in Apps Script\\n\\nTo set it up, follow this repository's README.\",\n      \"devices\": [\n        \"phone\"\n      ]\n    },\n    {\n      \"key\": \"guide\",\n      \"type\": \"link\",\n      \"label\": \"Ver la guía\",\n      \"labelEn\": \"Open the guide\",\n      \"url\": \"https://github.com/yumehotaru41-rgb/kino-plugin-sync-drive\",\n      \"devices\": [\n        \"phone\"\n      ]\n    },\n    {\n      \"key\": \"server\",\n      \"label\": \"Tu servidor\",\n      \"labelEn\": \"Your server\",\n      \"type\": \"section\",\n      \"hint\": \"La URL /exec del Web App y el token que imprimió setup() en Apps Script.\",\n      \"hintEn\": \"The Web App's /exec URL and the token setup() printed in Apps Script.\"\n    },\n    {\n      \"key\": \"serverUrl\",\n      \"label\": \"Dirección del Web App\",\n      \"labelEn\": \"Web App address\",\n      \"type\": \"text\",\n      \"hint\": \"https://script.google.com/macros/s/…/exec\",\n      \"hintEn\": \"https://script.google.com/macros/s/…/exec\"\n    },\n    {\n      \"key\": \"token\",\n      \"label\": \"Token\",\n      \"labelEn\": \"Token\",\n      \"type\": \"password\",\n      \"hint\": \"El que mostró setup() en Apps Script\",\n      \"hintEn\": \"The one setup() printed in Apps Script\"\n    },\n    {\n      \"key\": \"status\",\n      \"label\": \"Estado\",\n      \"labelEn\": \"Status\",\n      \"type\": \"status\"\n    },\n    {\n      \"key\": \"check\",\n      \"label\": \"Probar conexión\",\n      \"labelEn\": \"Test the connection\",\n      \"type\": \"action\"\n    }\n  ],\n  \"sync\": {\n    \"mode\": \"poll\",\n    \"pullEveryMs\": 300000,\n    \"pushDebounceMs\": 60000,\n    \"maxBlobBytes\": 4194304,\n    \"keySecret\": \"token\",\n    \"provision\": [\n      \"serverUrl\",\n      \"token\"\n    ]\n  }\n}\n"
     }
-  ],
-  "sync": {
-    "mode": "poll",
-    "pullEveryMs": 300000,
-    "pushDebounceMs": 60000,
-    "maxBlobBytes": 4194304,
-    "keySecret": "token",
-    "provision": [
-      "serverUrl",
-      "token"
-    ]
   }
-}
+]

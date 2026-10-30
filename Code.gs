@@ -56,7 +56,9 @@ function doPost(e) {
   try {
     var body = {};
     try { body = JSON.parse((e && e.postData && e.postData.contents) || "{}"); } catch (err) { return json_({ ok: false, error: "body" }); }
-    if (!checkToken_(body.token)) return json_({ ok: false, error: "token" });
+    // el token llega en el cuerpo JSON y ademas en la URL (?token=...): vale cualquiera de los dos
+    var given = body.token || (e && e.parameter && e.parameter.token);
+    if (!checkToken_(given)) return json_({ ok: false, error: "token" });
     if (body.action !== "push") return json_({ ok: false, error: "action" });
     var blob = String(body.blob || "");
     if (!blob) return json_({ ok: false, error: "blob" });
