@@ -6,7 +6,8 @@
   "entry": "plugin.js",
   "icon": "icon.png",
   "description": "Sincroniza tus aparatos de Kino a traves de un Web App de Google Apps Script tuyo, que guarda la copia cifrada en tu Google Drive. Monta Code.gs (ver README) y escribe su URL /exec y su token.",
-  "author": "yumehotaru41-rgb",
+  "author": "Hotaru Yume",
+  "creator": "hotaruyume",
   "hosts": [
     "script.google.com"
   ],
