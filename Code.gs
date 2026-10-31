@@ -8,19 +8,26 @@
 // PRIMERA VEZ: ejecuta setup() (arriba, menu de funciones + boton Ejecutar), autoriza y copia el
 // token que aparece en el Registro de ejecucion. Despues: Implementar > Nueva implementacion >
 // Aplicacion web, con "Ejecutar como: Yo" y "Quien tiene acceso: Cualquier persona".
+//
+// VELOCIDAD: los IDs de la carpeta y del archivo se guardan la primera vez (buscar por nombre en
+// Drive es lento; DriveApp.getFolderById/getFileById es casi instantaneo) y la copia se sirve
+// ademas desde la cache del script, asi la mayoria de las lecturas no tocan Drive.
 
 var FOLDER_NAME = "Kino Sync Drive";
 var BLOB_FILE = "kino-sync-blob.txt";
 var MAX_BLOB_CHARS = 8 * 1024 * 1024; // un poco mas que los 4 MB de Kino, que viajan como base64
+var CACHE_KEY = "pullcache";
+var CACHE_MAX = 90000; // la cache guarda valores de hasta 100 KB; dejamos margen
+
+var props_ = function () { return PropertiesService.getScriptProperties(); };
 
 function setup() {
-  var props = PropertiesService.getScriptProperties();
-  var tk = props.getProperty("TOKEN");
+  var tk = props_().getProperty("TOKEN");
   if (!tk) {
     tk = Utilities.getUuid().split("-").join("") + Utilities.getUuid().split("-").join("");
-    props.setProperty("TOKEN", tk);
+    props_().setProperty("TOKEN", tk);
   }
-  folder_(); // crea ya la carpeta "Kino Sync Drive" en tu Drive
+  folder_(); // crea la carpeta y guarda su ID
   Logger.log("TOKEN para el plugin de Kino (copialo completo):");
   Logger.log(tk);
   Logger.log("Ahora: Implementar > Nueva implementacion > Aplicacion web.");
@@ -39,9 +46,12 @@ function doGet(e) {
       return json_({ ok: true, empty: v === null });
     }
     if (p.action === "pull") {
+      var cached = cache_();
+      if (cached) return json_({ ok: true, blob: cached.blob, version: cached.version });
       var v2 = currentVersion_();
+      if (v2 === null) return json_({ ok: true, blob: null, version: "0" });
       var blob = readBlob_();
-      if (v2 === null || blob === null) return json_({ ok: true, blob: null, version: "0" });
+      if (blob === null) return json_({ ok: true, blob: null, version: "0" });
       return json_({ ok: true, blob: blob, version: v2 });
     }
     return json_({ ok: false, error: "action" });
@@ -68,12 +78,17 @@ function doPost(e) {
     var current = currentVersion_();
     var cur = current === null ? "0" : current;
     if (expected !== cur) return json_({ ok: false, conflict: true, version: cur });
-    var props = PropertiesService.getScriptProperties();
-    var counter = Number(props.getProperty("COUNTER") || "0") + 1;
+    var counter = Number(props_().getProperty("COUNTER") || "0") + 1;
     var version = counter + "." + Utilities.getUuid().split("-").join("").slice(0, 8);
     writeBlob_(blob);
-    props.setProperty("COUNTER", String(counter));
-    props.setProperty("VERSION", version);
+    props_().setProperty("COUNTER", String(counter));
+    props_().setProperty("VERSION", version);
+    // mantiene la cache al dia: el siguiente pull no toca Drive
+    if (blob.length <= CACHE_MAX) {
+      try { CacheService.getScriptCache().put(CACHE_KEY, JSON.stringify({ blob: blob, version: version }), 21600); } catch (err) { /* la cache es opcional */ }
+    } else {
+      try { CacheService.getScriptCache().remove(CACHE_KEY); } catch (err) { /* la cache es opcional */ }
+    }
     return json_({ ok: true, version: version });
   } catch (err) {
     return json_({ ok: false, error: String(err) });
@@ -85,30 +100,62 @@ function doPost(e) {
 // ---- almacen ----
 
 function checkToken_(given) {
-  var tk = PropertiesService.getScriptProperties().getProperty("TOKEN");
+  var tk = props_().getProperty("TOKEN");
   return !!tk && String(given || "") === tk;
 }
 
 function currentVersion_() {
-  var v = PropertiesService.getScriptProperties().getProperty("VERSION");
+  var v = props_().getProperty("VERSION");
   return v || null;
 }
 
+/** La copia cacheada {blob, version}, o null. */
+function cache_() {
+  try {
+    var s = CacheService.getScriptCache().get(CACHE_KEY);
+    return s ? JSON.parse(s) : null;
+  } catch (err) {
+    return null;
+  }
+}
+
+/** La carpeta por ID (rapido); la primera vez la busca por nombre y guarda el ID. */
 function folder_() {
+  var id = props_().getProperty("FOLDER_ID");
+  if (id) {
+    try { return DriveApp.getFolderById(id); } catch (err) { /* la carpeta se movio o borro: volver a buscar */ }
+  }
   var it = DriveApp.getFoldersByName(FOLDER_NAME);
-  return it.hasNext() ? it.next() : DriveApp.createFolder(FOLDER_NAME);
+  var f = it.hasNext() ? it.next() : DriveApp.createFolder(FOLDER_NAME);
+  props_().setProperty("FOLDER_ID", f.getId());
+  return f;
+}
+
+/** El archivo por ID (rapido); la primera vez lo busca por nombre y guarda el ID. */
+function file_() {
+  var id = props_().getProperty("FILE_ID");
+  if (id) {
+    try { return DriveApp.getFileById(id); } catch (err) { /* el archivo se movio o borro: volver a buscar */ }
+  }
+  var it = folder_().getFilesByName(BLOB_FILE);
+  if (it.hasNext()) {
+    var f = it.next();
+    props_().setProperty("FILE_ID", f.getId());
+    return f;
+  }
+  return null;
 }
 
 function readBlob_() {
-  var it = folder_().getFilesByName(BLOB_FILE);
-  return it.hasNext() ? it.next().getBlob().getDataAsString() : null;
+  var f = file_();
+  return f ? f.getBlob().getDataAsString() : null;
 }
 
 function writeBlob_(text) {
-  var f = folder_();
-  var it = f.getFilesByName(BLOB_FILE);
-  if (it.hasNext()) { it.next().setContent(text); return; }
-  f.createFile(BLOB_FILE, text, "text/plain");
+  var f = file_();
+  if (f) { f.setContent(text); return; }
+  f = folder_().createFile(BLOB_FILE, text, "text/plain");
+  props_().setProperty("FILE_ID", f.getId());
 }
 
 function json_(obj) {
